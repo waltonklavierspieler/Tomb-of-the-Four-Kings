@@ -1,4 +1,4 @@
-body, html {
+/*body, html {
 }
 
 .container {
@@ -44,4 +44,70 @@ body, html {
 }
 
 #copyright {
+}
+*/
+body {
+  font-family: 'Georgia', serif;
+  background-color: #1a1a1a;
+  color: #f5f5dc;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 2px solid #555;
+  padding: 20px;
+  background-color: #2e2e2e;
+  border-radius: 10px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+button {
+  background-color: #444;
+  color: #f5f5dc;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+.torchRow, .hpBar {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.playField {
+  margin-top: 20px;
+}
+
+.playerHand {
+  margin-top: 15px;
+  font-size: 1rem;
+  background-color: #3a3a3a;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.discardPile {
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.encounterImage, .encounterCardStack {
+  display: inline-block;
+  margin: 5px;
 }
