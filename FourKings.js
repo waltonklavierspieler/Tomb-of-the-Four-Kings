@@ -1,6 +1,6 @@
-/*//function for returning to game screen
+//function for returning to game screen
 function resetGame() {
-	let resetScreen = document.querySelector('.');
+	let resetScreen = document.querySelector('.container');
 	container.innerHTML = `
 	    <h1 id="introduction">After a long journey beset by hardships, your destination finally stands in front of you: the Tomb of the Four Kings.
         	None now remain who can retell their trials, their victories, or even their names. But one legend persists across time. Each king 
@@ -60,7 +60,26 @@ function startGame() {
 			<div id="currentHp"></div>
 			<div id="lostHp"></div>
 		</div>
+		<div class="playGame">
+			<button id="play">Draw a card</button>
+		</div>
 	`
+	let newDeck = deckGen();
+	for(let i = 0; i < 10; i++) {shuffle(newDeck)};
+	inventory();
+	let delveCheck = true;
+	let level = 0;
+	const playButton = document.getElementById("play");
+	playButton.addEventListener('click', playRound(newDeck))
+}
+
+// function for beating the game
+function success() {
+	alert('You win!')
+}
+
+function failure() {
+	alert('You lose!')
 }
 
 //helper function to clear container div
@@ -74,185 +93,130 @@ function returnRow() {
 	const newRow = document.createElement('div');
 	newRow.setAttribute('class', 'returnRow');
 	parentElement.appendChild(newRow);
-}*/
-
-//CHATGPT SHIT 
-// Game State
-let deck = [];
-let playerHp = 9;
-let torches = 4;
-let level = 0;
-let delveCheck = true;
-let foundTreasure = [];
-let foundHoards = [];
-let skills = [];
-
-// Helper function to parse cards
-function parseCard(card) {
-  const match = card.match(/^([JQKA]|10|[2-9])([a-z])$/);
-  return match ? { rank: match[1], suit: match[2] } : null;
 }
 
-// Clear screen
-function clearScreen(div) {
-  div.innerHTML = '';
-}
+// definining the game logic
 
-// Generate deck
+// generate a deck function CHECK
 function deckGen() {
-  const suits = ['s', 'c', 'd', 'h'];
-  const ranks = ['J', 'Q', 'K', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-  let deck = [];
-  for (let suit of suits) {
-    for (let rank of ranks) {
-      deck.push(rank + suit);
-    }
-  }
-  // Remove 2–10 of Hearts (for HP)
-  return deck.filter(card => !(parseCard(card).suit === 'h' && !['J', 'Q', 'K', 'A'].includes(parseCard(card).rank)));
+	const suits = ['s', 'c', 'd', 'h'];
+	const ranks = ['J', 'Q', 'K', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+	let deck = [];
+	for(let i =0; i<suits.length; i++) 
+	{
+		for(let j=0; j<ranks.length; j++)
+		{
+			deck.push(ranks[j]+suits[i])
+		}
+	}
+	//remove numerical hearts!
+	for(let k =0; k < 9; k++)
+	{deck.pop()}
+	return deck
 }
 
+//shuffle deck function CHECK
 function shuffle(deck) {
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
+	for(let i=0; i < deck.length; i++) 
+	{
+		let shuffPos = Math.floor(Math.random() * deck.length);
+		[deck[i], deck[shuffPos]] = [deck[shuffPos], deck[i]]; 
+	}
+} 
+
+// function for generating storage spaces
+function inventory() {
+	// Generate hpBar
+	let playerHp = 9;
+	let foundTreasure = [];
+	let foundHoards = [];
+	let skills = [];
+	let torches = 4
 }
 
-function instructions() {
-  if (!confirm("Would you like to see the instructions?")) return;
-  alert("Collect treasure, survive monsters, and escape the dungeon. Click 'Draw a card' to begin delving!");
+//function to check decklength
+function emptyDeck(deck) {
+	return deck.length == 0
 }
 
-function resetGame() {
-  const container = document.querySelector('.container');
-  clearScreen(container);
-  container.innerHTML = `
-    <h1 id="introduction">After a long journey beset by hardships, your destination finally stands before you...</h1>
-    <button id="startGame">Enter the tomb</button>
-  `;
+// Round of play
+function playRound(deck) {
+// - alter delve/return number on delving check (true or false?)
+	if(delveCheck) {
+		level -= 1
+	} else {
+		level += 1
+	}
+// - Begin monster turn
+//		set wincheck == false
+	let wincheck = false;
+//		draw encounter card and remove from deck object:
+	let encounter = [];
+//		generate roundqqueue for encounter cards
+	let monsterCheck = false;
+	while(!monsterCheck) {
+		let currentCard = deck.pop();
+		let rank = currentCard[0];
+		if(rank=='K') {
+			encounter.push(currentCard)
+		}
+		if(rank=='Q') {
+			wincheck = true
+		}
+		if(rank=='J') {
+			skills.push(currentCard)
+		}
+		if(rank=='A') {
+			torches -= 1;
+			if(torches==0) {
+				failure()
+			}
+		} else {
+			encounter.push(currentCard);
+			monsterCheck = true
+		}
+	}
+// - if wincheck, endround();
+// Player turn
+	if(wincheck) {
+		let topCard = encounter[encounter.length -1];
+		if(topCard[1] == 'd') {
+			foundTreasure.push()
+		}
+		foundTreasure.push(encounter.slice(0, encounter.length-1))
+	}
+	while(!wincheck) {
+		let topCard = encounter[encounter.length -1];
+		let playerCard = deck.pop(); 
+		let rank = playerCard[0];
+		if(rank=='K') {
+			encounter.push(currentCard)
+		}
+		if(rank=='Q') {
+			wincheck = true
+		}
+		if(rank=='J') {
+			skills.push(currentCard)
+		}
+		if(rank=='A') {
+			torches -= 1;
+			if(torches==0) {
+				failure()
+			}
+		} else {
+			if(parseInt(rank) >= parseInt(topCard[0])) {
+				if(topCard[1] == 'd') {
+					foundTreasure.push()
+				}
+				foundTreasure.push(encounter.slice(0, encounter.length-1))
+			} else {
+				playerHp -= parseInt(topCard[0]) - parseInt(rank)
+			}
+			wincheck = true
+		}
+	}
+// check if level == 0
+	if(level==0) {
+		success()
+	}
 }
-
-function startGame() {
-  instructions();
-  const container = document.querySelector('.container');
-  clearScreen(container);
-  container.innerHTML = `
-    <div class="torchRow">Torches: <span id="torchCount">4</span></div>
-    <div class="playField">
-      <div class="discardPile"></div>
-      <div class="playerHand"></div>
-      <div class="hpBar">HP: <span id="hpCount">9</span></div>
-      <div><button id="play">Draw a card</button></div>
-    </div>
-  `;
-
-  deck = deckGen();
-  for (let i = 0; i < 10; i++) shuffle(deck);
-
-  document.getElementById('play').addEventListener('click', () => playRound());
-}
-
-function playRound() {
-  if (deck.length === 0) return alert("The deck is empty.");
-
-  if (delveCheck) {
-    level--;
-  } else {
-    level++;
-  }
-
-  let wincheck = false;
-  let encounter = [];
-  let monsterCheck = false;
-
-  while (!monsterCheck && deck.length > 0) {
-    let currentCard = deck.pop();
-    let { rank, suit } = parseCard(currentCard);
-
-    if (rank === 'K') foundHoards.push(currentCard);
-    else if (rank === 'Q') wincheck = true;
-    else if (rank === 'J') skills.push(currentCard);
-    else if (rank === 'A') {
-      torches--;
-      updateTorchDisplay();
-      if (torches === 0) return failure();
-    } else {
-      encounter.push(currentCard);
-      monsterCheck = true;
-    }
-  }
-
-  if (wincheck) {
-    let topCard = parseCard(encounter[encounter.length - 1]);
-    if (topCard && topCard.suit === 'd') foundTreasure.push(encounter.pop());
-    updateDisplay();
-    return;
-  }
-
-  while (!wincheck && deck.length > 0) {
-    let playerCard = deck.pop();
-    let { rank, suit } = parseCard(playerCard);
-
-    if (rank === 'K') foundHoards.push(playerCard);
-    else if (rank === 'Q') wincheck = true;
-    else if (rank === 'J') skills.push(playerCard);
-    else if (rank === 'A') {
-      torches--;
-      updateTorchDisplay();
-      if (torches === 0) return failure();
-    } else {
-      let enemy = parseCard(encounter[encounter.length - 1]);
-      if (parseInt(rank) >= parseInt(enemy.rank)) {
-        if (enemy.suit === 'd') foundTreasure.push(encounter.pop());
-      } else {
-        playerHp -= (parseInt(enemy.rank) - parseInt(rank));
-        updateHpDisplay();
-        if (playerHp <= 0) return failure();
-      }
-      wincheck = true;
-    }
-  }
-
-  if (level === 0) success();
-  updateDisplay();
-}
-
-function updateDisplay() {
-  updateHpDisplay();
-  updateTorchDisplay();
-  const handDiv = document.querySelector('.playerHand');
-  handDiv.innerHTML = `Treasure: ${foundTreasure.join(', ')} | Hoards: ${foundHoards.join(', ')} | Skills: ${skills.join(', ')}`;
-}
-
-function updateHpDisplay() {
-  document.getElementById('hpCount').innerText = playerHp;
-}
-
-function updateTorchDisplay() {
-  document.getElementById('torchCount').innerText = torches;
-}
-
-function success() {
-  alert("You found the treasure and made it out alive! Victory!");
-  resetGame();
-}
-
-function failure() {
-  alert("You have perished in the depths...");
-  resetGame();
-}
-
-// Set up initial screen after DOM loads
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.querySelector('.container');
-
-  container.addEventListener('click', function (e) {
-    if (e.target && e.target.id === 'startGame') {
-      startGame();
-    }
-  });
-
-  resetGame();
-});
-
