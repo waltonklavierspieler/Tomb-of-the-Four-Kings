@@ -245,9 +245,7 @@ function failure() {
 
 // Set up initial screen after DOM loads
 document.addEventListener('DOMContentLoaded', () => {
-  const container = document.createElement('div');
-  container.className = 'container';
-  document.body.appendChild(container);
+  const container = document.querySelector('.container');
 
   container.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'startGame') {
@@ -257,3 +255,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   resetGame();
 });
+
